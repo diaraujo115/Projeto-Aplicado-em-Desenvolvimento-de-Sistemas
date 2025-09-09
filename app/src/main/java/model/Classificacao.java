@@ -1,24 +1,55 @@
 package model;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
+
+@Entity(tableName = "classificacoes",
+        primaryKeys = {"usuario_id", "receita_id"},
+        foreignKeys = {
+                @ForeignKey(entity = Usuario.class,
+                        parentColumns = "id",
+                        childColumns = "usuario_id",
+                        onDelete = ForeignKey.CASCADE),
+                @ForeignKey(entity = Receita.class,
+                        parentColumns = "id",
+                        childColumns = "receita_id",
+                        onDelete = ForeignKey.CASCADE)
+        },
+        indices = {@Index("usuario_id"), @Index("receita_id")})
 public class Classificacao {
-    private Integer id;
-    private Float nota;
-    private Receita receita;
-    private Usuario usuario;
+    @ColumnInfo(name = "usuario_id")
+    public int usuarioId;
 
-    public Classificacao(Integer id, Float nota, Receita receita, Usuario usuario) {
-        this.id = id;
+    @ColumnInfo(name = "receita_id")
+    public int receitaId;
+
+    public Float nota;
+
+    public Classificacao() {
+    }
+
+    public Classificacao(int usuarioId, int receitaId, Float nota) {
+        this.usuarioId = usuarioId;
+        this.receitaId = receitaId;
         this.nota = nota;
-        this.receita = receita;
-        this.usuario = usuario;
     }
 
-    public Integer getId() {
-        return id;
+    public int getUsuarioId() {
+        return usuarioId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setUsuarioId(int usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    public int getReceitaId() {
+        return receitaId;
+    }
+
+    public void setReceitaId(int receitaId) {
+        this.receitaId = receitaId;
     }
 
     public Float getNota() {
@@ -28,21 +59,4 @@ public class Classificacao {
     public void setNota(Float nota) {
         this.nota = nota;
     }
-
-    public Receita getReceita() {
-        return receita;
-    }
-
-    public void setReceita(Receita receita) {
-        this.receita = receita;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
 }

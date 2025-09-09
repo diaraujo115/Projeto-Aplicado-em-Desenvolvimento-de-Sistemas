@@ -1,26 +1,46 @@
 package model;
 
-public class Ingrediente {
-    private Integer id;
-    private String name;
-    private String type;
-    private String calories;
-    private String saturatedFat;
-    private String sodium;
-    private String protein;
-    private String iron;
-    private String potassium;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-    public Ingrediente(Integer id, String name, String type, String calories, String saturatedFat, String sodium, String protein, String iron, String potassium) {
+@Entity(tableName = "ingredientes")
+public class Ingrediente {
+    @PrimaryKey(autoGenerate = true)
+    private Integer id;
+    private String nome;
+    private String tipo;
+    private String calorias;
+    private String gorduraSaturada;
+    private String gorduraTrans;
+    private String sodio;
+    private String colesterol;
+    private String proteina;
+    private String ferro;
+    private String potassio;
+    private String vitaminaD;
+    private String fibraAlimentar;
+    private String acucaresTotais;
+    private String quantidade;
+
+    public Ingrediente() {
+    }
+
+    public Ingrediente(Integer id, String nome, String tipo, String calorias, String gorduraSaturada, String gorduraTrans, String sodio, String colesterol, String proteina, String ferro, String potassio, String vitaminaD, String fibraAlimentar, String acucaresTotais, String quantidade) {
         this.id = id;
-        this.name = name;
-        this.type = type;
-        this.calories = calories;
-        this.saturatedFat = saturatedFat;
-        this.sodium = sodium;
-        this.protein = protein;
-        this.iron = iron;
-        this.potassium = potassium;
+        this.nome = nome;
+        this.tipo = tipo;
+        this.calorias = calorias;
+        this.gorduraSaturada = gorduraSaturada;
+        this.gorduraTrans = gorduraTrans;
+        this.sodio = sodio;
+        this.colesterol = colesterol;
+        this.proteina = proteina;
+        this.ferro = ferro;
+        this.potassio = potassio;
+        this.vitaminaD = vitaminaD;
+        this.fibraAlimentar = fibraAlimentar;
+        this.acucaresTotais = acucaresTotais;
+        this.quantidade = quantidade;
     }
 
     public Integer getId() {
@@ -31,69 +51,115 @@ public class Ingrediente {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getNome() {
+        return nome;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    public String getType() {
-        return type;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
-    public String getCalories() {
-        return calories;
+    public String getCalorias() {
+        return calorias;
     }
 
-    public void setCalories(String calories) {
-        this.calories = calories;
+    public void setCalorias(String calorias) {
+        this.calorias = calorias;
     }
 
-    public String getSaturatedFat() {
-        return saturatedFat;
+    public String getGorduraSaturada() {
+        return gorduraSaturada;
     }
 
-    public void setSaturatedFat(String saturatedFat) {
-        this.saturatedFat = saturatedFat;
+    public void setGorduraSaturada(String gorduraSaturada) {
+        this.gorduraSaturada = gorduraSaturada;
     }
 
-    public String getSodium() {
-        return sodium;
+    public String getGorduraTrans() {
+        return gorduraTrans;
     }
 
-    public void setSodium(String sodium) {
-        this.sodium = sodium;
+    public void setGorduraTrans(String gorduraTrans) {
+        this.gorduraTrans = gorduraTrans;
     }
 
-    public String getProtein() {
-        return protein;
+    public String getSodio() {
+        return sodio;
     }
 
-    public void setProtein(String protein) {
-        this.protein = protein;
+    public void setSodio(String sodio) {
+        this.sodio = sodio;
     }
 
-    public String getIron() {
-        return iron;
+    public String getColesterol() {
+        return colesterol;
     }
 
-    public void setIron(String iron) {
-        this.iron = iron;
+    public void setColesterol(String colesterol) {
+        this.colesterol = colesterol;
     }
 
-    public String getPotassium() {
-        return potassium;
+    public String getProteina() {
+        return proteina;
     }
 
-    public void setPotassium(String potassium) {
-        this.potassium = potassium;
+    public void setProteina(String proteina) {
+        this.proteina = proteina;
     }
 
+    public String getFerro() {
+        return ferro;
+    }
 
+    public void setFerro(String ferro) {
+        this.ferro = ferro;
+    }
+
+    public String getPotassio() {
+        return potassio;
+    }
+
+    public void setPotassio(String potassio) {
+        this.potassio = potassio;
+    }
+
+    public String getVitaminaD() {
+        return vitaminaD;
+    }
+
+    public void setVitaminaD(String vitaminaD) {
+        this.vitaminaD = vitaminaD;
+    }
+
+    public String getFibraAlimentar() {
+        return fibraAlimentar;
+    }
+
+    public void setFibraAlimentar(String fibraAlimentar) {
+        this.fibraAlimentar = fibraAlimentar;
+    }
+
+    public String getAcucaresTotais() {
+        return acucaresTotais;
+    }
+
+    public void setAcucaresTotais(String acucaresTotais) {
+        this.acucaresTotais = acucaresTotais;
+    }
+
+    public String getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(String quantidade) {
+        this.quantidade = quantidade;
+    }
 }
