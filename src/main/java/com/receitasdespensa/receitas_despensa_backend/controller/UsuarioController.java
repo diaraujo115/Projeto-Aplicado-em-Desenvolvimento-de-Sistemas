@@ -33,4 +33,9 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
+    @GetMapping("/perfil")
+    public ResponseEntity<String> verPerfil() {
+        return ResponseEntity.ok("Este é um endpoint protegido! Você está autenticado.");
+    }
 }

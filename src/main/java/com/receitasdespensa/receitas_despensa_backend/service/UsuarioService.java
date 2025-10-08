@@ -4,12 +4,16 @@ import com.receitasdespensa.receitas_despensa_backend.dto.LoginRequestDTO;
 import com.receitasdespensa.receitas_despensa_backend.model.Usuario;
 import com.receitasdespensa.receitas_despensa_backend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 
 @Service
-public class UsuarioService {
+public class UsuarioService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -41,5 +45,12 @@ public class UsuarioService {
             // 4. Se não baterem, lança uma exceção
             throw new UsernameNotFoundException("Email ou senha inválidos");
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        // A lógica é a mesma que estava na SecurityConfig: buscar o usuário pelo email
+        return usuarioRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + username));
     }
 }
