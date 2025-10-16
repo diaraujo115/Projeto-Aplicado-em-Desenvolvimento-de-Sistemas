@@ -78,4 +78,18 @@ public class ReceitaController {
         Classificacao novaClassificacao = classificacaoService.classificar(receitaId, nota);
         return ResponseEntity.ok(novaClassificacao);
     }
+
+    @PostMapping("/{receitaId}/salvar")
+    public ResponseEntity<Void> salvarReceita(@PathVariable Integer receitaId) {
+        receitaService.salvarReceita(receitaId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{receitaId}/salvar")
+    public ResponseEntity<Void> removerReceitaSalva(@PathVariable Integer receitaId) {
+        receitaService.removerReceitaSalva(receitaId);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

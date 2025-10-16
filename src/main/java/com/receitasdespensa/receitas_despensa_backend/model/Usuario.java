@@ -1,6 +1,7 @@
 package com.receitasdespensa.receitas_despensa_backend.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Generated;
@@ -9,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
 
 @Data
 @Entity
@@ -28,6 +31,15 @@ public class Usuario implements UserDetails{
 
     @Column(name = "senha_hash", nullable = false)
     private String senha;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "receitas_salvas", // Nome da tabela de junção
+            joinColumns = @JoinColumn(name = "id_usuario"), // Coluna que se refere a esta entidade (Usuario)
+            inverseJoinColumns = @JoinColumn(name = "id_receita") // Coluna que se refere à outra entidade (Receita)
+    )
+    @JsonIgnore // Essencial para evitar loops
+    private Set<Receita> receitasSalvas;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -65,5 +77,18 @@ public class Usuario implements UserDetails{
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(id, usuario.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

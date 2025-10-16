@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Data
 @Entity
@@ -44,8 +46,26 @@ public class Receita {
     @OneToMany(mappedBy = "receita", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReceitaIngrediente> ingredientes;
 
+    @ManyToMany(mappedBy = "receitasSalvas", fetch = FetchType.LAZY)
+    @JsonIgnore // Essencial para evitar loops
+    private Set<Usuario> salvadoPorUsuarios;
+
     @PrePersist // Executa este método antes de salvar a entidade no banco
     public void prePersist() {
         dataCriacao = LocalDateTime.now();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Receita receita = (Receita) o;
+        return Objects.equals(id, receita.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
