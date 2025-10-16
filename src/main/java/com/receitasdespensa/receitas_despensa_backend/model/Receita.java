@@ -50,6 +50,7 @@ public class Receita {
     @JsonIgnore // Essencial para evitar loops
     private Set<Usuario> salvadoPorUsuarios;
 
+
     @PrePersist // Executa este método antes de salvar a entidade no banco
     public void prePersist() {
         dataCriacao = LocalDateTime.now();
