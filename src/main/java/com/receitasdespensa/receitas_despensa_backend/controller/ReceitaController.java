@@ -1,11 +1,14 @@
 package com.receitasdespensa.receitas_despensa_backend.controller;
 
+import com.receitasdespensa.receitas_despensa_backend.dto.InformacaoNutricionalDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.ReceitaResponseDTO;
 import com.receitasdespensa.receitas_despensa_backend.model.Classificacao;
 import com.receitasdespensa.receitas_despensa_backend.model.Comentario;
 import com.receitasdespensa.receitas_despensa_backend.model.Receita;
+import com.receitasdespensa.receitas_despensa_backend.repository.ReceitaRepository;
 import com.receitasdespensa.receitas_despensa_backend.service.ClassificacaoService;
 import com.receitasdespensa.receitas_despensa_backend.service.ComentarioService;
+import com.receitasdespensa.receitas_despensa_backend.service.EdamamService;
 import com.receitasdespensa.receitas_despensa_backend.service.ReceitaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/receitas") // Todos os endpoints aqui começarão com /api/receitas
@@ -28,6 +32,12 @@ public class ReceitaController {
 
     @Autowired
     private ClassificacaoService classificacaoService;
+
+    @Autowired
+    private ReceitaRepository receitaRepository;
+
+    @Autowired
+    private EdamamService edamamService;
 
     @PostMapping
     public ResponseEntity<Receita> criar(@RequestBody Receita receita) {
@@ -91,5 +101,40 @@ public class ReceitaController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/recomendadas")
+    public ResponseEntity<List<Receita>> getReceitasRecomendadas(
+            @RequestParam List<Integer> ingredientes) {
 
+        List<Receita> receitasRecomendadas = receitaService.recomendarPorIngredientes(ingredientes);
+        return ResponseEntity.ok(receitasRecomendadas);
+    }
+
+    @GetMapping("/{id}/informacoes-nutricionais")
+    public ResponseEntity<InformacaoNutricionalDTO> getInformacoesNutricionais(@PathVariable Integer id) {
+        // Busca a receita completa com os ingredientes
+        Optional<Receita> receitaOpt = receitaService.buscarPorId(id)
+                .map(dto -> receitaRepository.findByIdWithIngredientes(dto.getId()).orElse(null)); // Converte DTO de volta para Entidade para pegar os ingredientes
+
+        if (receitaOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Formata a lista de ingredientes para o padrão da Edamam (ex: "1 cup flour")
+        List<String> ingredientesParaApi = receitaOpt.get().getIngredientes().stream()
+                .map(ri -> ri.getQuantidade() + " " + ri.getUnidade() + " " + ri.getIngrediente().getNome())
+                .collect(Collectors.toList());
+
+        if (ingredientesParaApi.isEmpty()) {
+            // Retorna um objeto vazio ou uma mensagem de erro apropriada
+            return ResponseEntity.badRequest().build();
+        }
+
+        InformacaoNutricionalDTO info = edamamService.getInformacoesNutricionais(ingredientesParaApi);
+
+        if (info == null) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build(); // MSG006
+        }
+
+        return ResponseEntity.ok(info);
+    }
 }
