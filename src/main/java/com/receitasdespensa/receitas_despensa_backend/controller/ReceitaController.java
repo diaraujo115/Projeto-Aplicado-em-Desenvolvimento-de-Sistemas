@@ -1,5 +1,6 @@
 package com.receitasdespensa.receitas_despensa_backend.controller;
 
+import com.receitasdespensa.receitas_despensa_backend.dto.ReceitaResponseDTO;
 import com.receitasdespensa.receitas_despensa_backend.model.Classificacao;
 import com.receitasdespensa.receitas_despensa_backend.model.Comentario;
 import com.receitasdespensa.receitas_despensa_backend.model.Receita;
@@ -40,9 +41,9 @@ public class ReceitaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Receita> buscarPorId(@PathVariable Integer id) {
-        Optional<Receita> receita = receitaService.buscarPorId(id);
-        return receita.map(ResponseEntity::ok)
+    public ResponseEntity<ReceitaResponseDTO> buscarPorId(@PathVariable Integer id) {
+        Optional<ReceitaResponseDTO> receitaDto = receitaService.buscarPorId(id);
+        return receitaDto.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
