@@ -32,6 +32,8 @@ public class Usuario implements UserDetails{
     @Column(name = "senha_hash", nullable = false)
     private String senha;
 
+    private boolean ativo = true;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "receitas_salvas", // Nome da tabela de junção

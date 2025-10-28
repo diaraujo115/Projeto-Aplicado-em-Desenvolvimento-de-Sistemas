@@ -1,15 +1,18 @@
 package com.receitasdespensa.receitas_despensa_backend.service;
 
 import com.receitasdespensa.receitas_despensa_backend.dto.LoginRequestDTO;
+import com.receitasdespensa.receitas_despensa_backend.dto.UsuarioUpdateDTO;
 import com.receitasdespensa.receitas_despensa_backend.model.Usuario;
 import com.receitasdespensa.receitas_despensa_backend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.util.StringUtils;
 
 
 @Service
@@ -49,8 +52,44 @@ public class UsuarioService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // A lógica é a mesma que estava na SecurityConfig: buscar o usuário pelo email
-        return usuarioRepository.findByEmail(username)
+        Usuario usuario = usuarioRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + username));
+
+
+        if (!usuario.isAtivo()) {
+            throw new UsernameNotFoundException("Usuário inativo: " + username);
+        }
+
+        return usuario;
+    }
+
+    public Usuario atualizarPerfil(UsuarioUpdateDTO dto) {
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Usuario usuarioParaAtualizar = usuarioRepository.findById(usuarioLogado.getId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado no banco de dados."));
+
+
+        if (StringUtils.hasText(dto.getNome())) {
+            usuarioParaAtualizar.setNome(dto.getNome());
+        }
+
+        if (StringUtils.hasText(dto.getSenha())) {
+            usuarioParaAtualizar.setSenha(passwordEncoder.encode(dto.getSenha()));
+        }
+
+        return usuarioRepository.save(usuarioParaAtualizar);
+    }
+
+    public void deletarPerfil() {
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Usuario usuarioParaDeletar = usuarioRepository.findById(usuarioLogado.getId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        // Em vez de deletar, apenas marcamos como inativo
+        usuarioParaDeletar.setAtivo(false);
+
+        usuarioRepository.save(usuarioParaDeletar);
     }
 }
