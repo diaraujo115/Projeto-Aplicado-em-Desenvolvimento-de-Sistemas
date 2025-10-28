@@ -153,4 +153,17 @@ public class ReceitaService {
         }
         return receitaRepository.findReceitasByIngredientes(idsIngredientes);
     }
+
+    public boolean isReceitaSalvaPeloUsuarioLogado(Integer receitaId) {
+        Usuario usuarioPrincipal = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Busca a instância gerenciada do usuário para acessar a coleção lazy
+        Usuario usuarioLogado = usuarioRepository.findById(usuarioPrincipal.getId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
+
+        // Verifica se a coleção 'receitasSalvas' contém uma receita com o ID fornecido
+        // O '.stream().anyMatch()' é uma forma eficiente de verificar sem carregar todas as receitas salvas
+        return usuarioLogado.getReceitasSalvas().stream()
+                .anyMatch(receita -> receita.getId().equals(receitaId));
+    }
 }

@@ -16,4 +16,6 @@ public interface ClassificacaoRepository extends JpaRepository<Classificacao, In
 
     @Query("SELECT AVG(c.nota) FROM Classificacao c WHERE c.receita.id = :receitaId")
     Double findAverageNotaByReceitaId(@Param("receitaId") Integer receitaId);
+
+    Optional<Classificacao> findByUsuarioIdAndReceitaId(Integer usuarioId, Integer receitaId);
 }

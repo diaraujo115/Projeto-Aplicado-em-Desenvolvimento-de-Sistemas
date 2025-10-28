@@ -42,4 +42,11 @@ public class ClassificacaoService {
 
         return classificacaoRepository.save(classificacao);
     }
+
+    public Optional<Classificacao> buscarMinhaClassificacao(Integer receitaId) {
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Usamos os IDs para a busca
+        return classificacaoRepository.findByUsuarioIdAndReceitaId(usuarioLogado.getId(), receitaId);
+    }
 }

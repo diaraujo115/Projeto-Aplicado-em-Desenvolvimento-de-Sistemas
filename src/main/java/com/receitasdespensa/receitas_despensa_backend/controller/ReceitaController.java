@@ -139,4 +139,24 @@ public class ReceitaController {
 
         return ResponseEntity.ok(info);
     }
+
+    @GetMapping("/{receitaId}/minha-classificacao")
+    public ResponseEntity<Map<String, Integer>> getMinhaClassificacao(@PathVariable Integer receitaId) {
+        Optional<Classificacao> classificacaoOpt = classificacaoService.buscarMinhaClassificacao(receitaId);
+
+        if (classificacaoOpt.isPresent()) {
+            // Retorna um JSON simples: { "nota": X }
+            return ResponseEntity.ok(Map.of("nota", classificacaoOpt.get().getNota()));
+        } else {
+            // Se o usuário ainda não classificou, retorna not found ou um objeto vazio
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/{receitaId}/is-salva")
+    public ResponseEntity<Map<String, Boolean>> isReceitaSalva(@PathVariable Integer receitaId) {
+        boolean salva = receitaService.isReceitaSalvaPeloUsuarioLogado(receitaId);
+        // Retorna um JSON simples: { "salva": true/false }
+        return ResponseEntity.ok(Map.of("salva", salva));
+    }
 }
