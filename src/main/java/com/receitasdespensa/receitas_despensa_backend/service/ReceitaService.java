@@ -32,14 +32,13 @@ public class ReceitaService {
     private UsuarioRepository usuarioRepository;
 
     // READ (Listar todas as receitas)
-    public List<Receita> listarTodas() {
-        return receitaRepository.findAll();
-    }
-
-    // READ (Buscar uma receita por ID)
-//    public Optional<Receita> buscarPorId(Integer id) {
-//        return receitaRepository.findById(id);
+//    public List<Receita> listarTodas() {
+//        return receitaRepository.findAll();
 //    }
+
+    public List<Receita> listarTodas(String categoria, String dieta) {
+        return receitaRepository.findByFilters(categoria, dieta);
+    }
 
     public Optional<ReceitaResponseDTO> buscarPorId(Integer id) {
         // Usamos o método que já garante o carregamento dos ingredientes

@@ -47,9 +47,19 @@ public class ReceitaController {
         return new ResponseEntity<>(novaReceita, HttpStatus.CREATED);
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<Receita>> listarTodas() {
+//        return ResponseEntity.ok(receitaService.listarTodas());
+//    }
+
     @GetMapping
-    public ResponseEntity<List<Receita>> listarTodas() {
-        return ResponseEntity.ok(receitaService.listarTodas());
+    public ResponseEntity<List<Receita>> listarTodas(
+            // @RequestParam(required = false) torna os parâmetros opcionais
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String dieta) {
+
+        List<Receita> receitas = receitaService.listarTodas(categoria, dieta);
+        return ResponseEntity.ok(receitas);
     }
 
     @GetMapping("/{id}")

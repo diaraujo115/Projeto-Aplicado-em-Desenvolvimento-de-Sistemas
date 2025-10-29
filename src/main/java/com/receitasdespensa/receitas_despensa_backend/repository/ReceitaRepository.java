@@ -19,4 +19,19 @@ public interface ReceitaRepository extends JpaRepository<Receita, Integer> {
 
     @Query("SELECT r FROM Receita r JOIN r.ingredientes ri WHERE ri.ingrediente.id IN :idsIngredientes GROUP BY r.id ORDER BY COUNT(r) DESC")
     List<Receita> findReceitasByIngredientes(@Param("idsIngredientes") List<Integer> idsIngredientes);
+
+    /**
+     * Busca receitas filtrando opcionalmente por categoria e/ou dieta.
+     * Se um parâmetro for nulo ou vazio, ele é ignorado no filtro.
+     */
+    @Query("SELECT r FROM Receita r WHERE " +
+            "(:categoria IS NULL OR :categoria = '' OR r.categoria = :categoria) AND " +
+            "(:dieta IS NULL OR :dieta = '' OR r.dieta = :dieta)")
+    List<Receita> findByFilters(
+            @Param("categoria") String categoria,
+            @Param("dieta") String dieta
+    );
+
 }
+
+
