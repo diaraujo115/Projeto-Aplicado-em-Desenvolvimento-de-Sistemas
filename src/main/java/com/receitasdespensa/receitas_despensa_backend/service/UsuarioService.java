@@ -1,7 +1,9 @@
 package com.receitasdespensa.receitas_despensa_backend.service;
 
 import com.receitasdespensa.receitas_despensa_backend.dto.LoginRequestDTO;
+import com.receitasdespensa.receitas_despensa_backend.dto.UsuarioDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.UsuarioUpdateDTO;
+import com.receitasdespensa.receitas_despensa_backend.model.Receita;
 import com.receitasdespensa.receitas_despensa_backend.model.Usuario;
 import com.receitasdespensa.receitas_despensa_backend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+import java.util.Set;
+import java.util.Collections;
 
 @Service
 public class UsuarioService implements UserDetailsService {
@@ -91,5 +96,31 @@ public class UsuarioService implements UserDetailsService {
         usuarioParaDeletar.setAtivo(false);
 
         usuarioRepository.save(usuarioParaDeletar);
+    }
+
+    public Set<Receita> getMinhasReceitasSalvas() {
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Busca o usuário com a coleção já carregada (eager)
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByIdWithReceitasSalvas(usuarioLogado.getId());
+
+        if (usuarioOpt.isPresent()) {
+            return usuarioOpt.get().getReceitasSalvas();
+        }
+        return Collections.emptySet(); // Retorna um conjunto vazio se algo der errado
+    }
+
+    public UsuarioDTO getMeuPerfil() {
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Busca o usuário "vivo" para garantir dados atualizados
+        Usuario usuario = usuarioRepository.findById(usuarioLogado.getId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        UsuarioDTO dto = new UsuarioDTO();
+        dto.setId(usuario.getId());
+        dto.setNome(usuario.getNome());
+        // Intencionalmente não retornamos email ou senha
+        return dto;
     }
 }

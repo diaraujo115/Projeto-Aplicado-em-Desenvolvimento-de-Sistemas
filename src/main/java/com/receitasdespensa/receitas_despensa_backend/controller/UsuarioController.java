@@ -4,6 +4,7 @@ import com.receitasdespensa.receitas_despensa_backend.dto.LoginRequestDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.LoginResponseDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.UsuarioDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.UsuarioUpdateDTO;
+import com.receitasdespensa.receitas_despensa_backend.model.Receita;
 import com.receitasdespensa.receitas_despensa_backend.model.Usuario;
 import com.receitasdespensa.receitas_despensa_backend.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
+
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -57,5 +60,17 @@ public class UsuarioController {
     public ResponseEntity<Void> deletarPerfil() {
         usuarioService.deletarPerfil();
         return ResponseEntity.noContent().build(); // 204 No Content é uma resposta padrão para delete bem-sucedido
+    }
+
+    @GetMapping("/meu-perfil/receitas-salvas")
+    public ResponseEntity<Set<Receita>> getMinhasReceitasSalvas() {
+        Set<Receita> receitasSalvas = usuarioService.getMinhasReceitasSalvas();
+        return ResponseEntity.ok(receitasSalvas);
+    }
+
+    @GetMapping("/meu-perfil")
+    public ResponseEntity<UsuarioDTO> getMeuPerfil() {
+        UsuarioDTO dto = usuarioService.getMeuPerfil();
+        return ResponseEntity.ok(dto);
     }
 }

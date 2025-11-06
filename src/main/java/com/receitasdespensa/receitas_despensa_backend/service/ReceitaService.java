@@ -165,4 +165,13 @@ public class ReceitaService {
         return usuarioLogado.getReceitasSalvas().stream()
                 .anyMatch(receita -> receita.getId().equals(receitaId));
     }
+
+    public List<Receita> listarMinhasReceitas() {
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return receitaRepository.findByUsuarioId(usuarioLogado.getId());
+    }
+
+    public List<Receita> buscarPorTitulo(String termoDeBusca) {
+        return receitaRepository.findByTituloContainingIgnoreCase(termoDeBusca);
+    }
 }

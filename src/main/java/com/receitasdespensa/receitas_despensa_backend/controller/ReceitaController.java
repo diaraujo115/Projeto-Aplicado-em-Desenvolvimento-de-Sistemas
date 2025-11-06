@@ -169,4 +169,18 @@ public class ReceitaController {
         // Retorna um JSON simples: { "salva": true/false }
         return ResponseEntity.ok(Map.of("salva", salva));
     }
+
+    @GetMapping("/minhas-receitas")
+    public ResponseEntity<List<Receita>> getMinhasReceitas() {
+        List<Receita> receitas = receitaService.listarMinhasReceitas();
+        return ResponseEntity.ok(receitas);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Receita>> buscarReceitas(
+            @RequestParam("q") String query) {
+
+        List<Receita> receitas = receitaService.buscarPorTitulo(query);
+        return ResponseEntity.ok(receitas);
+    }
 }
