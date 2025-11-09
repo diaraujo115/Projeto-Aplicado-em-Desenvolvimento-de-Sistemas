@@ -1,4 +1,5 @@
 package com.receitasdespensa.receitas_despensa_backend.dto;
+import com.receitasdespensa.receitas_despensa_backend.model.InformacaoNutricional;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,7 @@ public class ReceitaResponseDTO {
     private LocalDateTime dataCriacao;
     private UsuarioDTO usuario;
     private List<ReceitaIngredienteDTO> ingredientes;
+    private InformacaoNutricional informacaoNutricional;
 
     private Double mediaAvaliacoes;
 }

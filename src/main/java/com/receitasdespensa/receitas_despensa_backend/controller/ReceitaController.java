@@ -193,25 +193,19 @@ public class ReceitaController {
             return ResponseEntity.notFound().build();
         }
 
-        // === LÓGICA DE TRADUÇÃO ===
         List<String> ingredientesParaApi = receitaOpt.get().getIngredientes().stream()
                 .map(ri -> {
                     String qtd = ri.getQuantidade();
-                    // Traduz a unidade usando o serviço
                     String unidadeEn = edamamService.traduzirUnidade(ri.getUnidade());
-                    // Pega o nome em inglês da entidade
                     String nomeEn = ri.getIngrediente().getNomeEn();
 
-                    // Fallback: Se não houver tradução, usa o nome original
                     if (nomeEn == null || nomeEn.trim().isEmpty()) {
                         nomeEn = ri.getIngrediente().getNome();
                     }
 
-                    // Monta a string final em inglês
                     return qtd + " " + unidadeEn + " " + nomeEn;
                 })
                 .collect(Collectors.toList());
-        // === FIM DA LÓGICA DE TRADUÇÃO ===
 
         if (ingredientesParaApi.isEmpty()) {
             return ResponseEntity.badRequest().build();

@@ -50,6 +50,9 @@ public class Receita {
     @JsonIgnore // Essencial para evitar loops
     private Set<Usuario> salvadoPorUsuarios;
 
+    @OneToOne(mappedBy = "receita", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private InformacaoNutricional informacaoNutricional;
 
     @PrePersist // Executa este método antes de salvar a entidade no banco
     public void prePersist() {

@@ -11,4 +11,8 @@ public class InformacaoNutricionalDTO {
     private Double proteinas;
     private Double carboidratos;
     private Double gorduras;
+    private Double fibra;
+    private Double acucar;
+    private Double sodio;
+    private Double gorduraSaturada;
 }

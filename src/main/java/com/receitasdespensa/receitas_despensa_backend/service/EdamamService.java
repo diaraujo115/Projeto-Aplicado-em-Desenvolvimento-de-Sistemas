@@ -49,34 +49,28 @@ public class EdamamService {
         };
 
         try {
-
             EdamamResponseDTO edamamResponse = restTemplate.postForObject(url, requestBody, EdamamResponseDTO.class);
 
             if (edamamResponse != null && edamamResponse.getIngredients() != null) {
                 InformacaoNutricionalDTO infoFinal = new InformacaoNutricionalDTO();
-
-                double totalCalorias = 0.0;
-                double totalProteinas = 0.0;
-                double totalCarboidratos = 0.0;
-                double totalGorduras = 0.0;
+                double totalCalorias = 0.0, totalProteinas = 0.0, totalCarboidratos = 0.0;
+                double totalGorduras = 0.0, totalFibra = 0.0, totalAcucar = 0.0, totalSodio = 0.0, totalGorduraSaturada = 0.0;
 
                 for (IngredientDetail detail : edamamResponse.getIngredients()) {
                     if (detail.parsed != null && !detail.parsed.isEmpty()) {
-
                         Map<String, NutrienteDTO> nutrientes = detail.parsed.get(0).nutrients;
 
-                        if (nutrientes.containsKey("ENERC_KCAL")) {
-                            totalCalorias += nutrientes.get("ENERC_KCAL").getQuantity();
-                        }
-                        if (nutrientes.containsKey("PROCNT")) {
-                            totalProteinas += nutrientes.get("PROCNT").getQuantity();
-                        }
-                        if (nutrientes.containsKey("CHOCDF")) {
-                            totalCarboidratos += nutrientes.get("CHOCDF").getQuantity();
-                        }
-                        if (nutrientes.containsKey("FAT")) {
-                            totalGorduras += nutrientes.get("FAT").getQuantity();
-                        }
+
+                        if (nutrientes.containsKey("ENERC_KCAL")) totalCalorias += nutrientes.get("ENERC_KCAL").getQuantity();
+                        if (nutrientes.containsKey("PROCNT")) totalProteinas += nutrientes.get("PROCNT").getQuantity();
+                        if (nutrientes.containsKey("CHOCDF")) totalCarboidratos += nutrientes.get("CHOCDF").getQuantity();
+                        if (nutrientes.containsKey("FAT")) totalGorduras += nutrientes.get("FAT").getQuantity();
+
+
+                        if (nutrientes.containsKey("FIBTG")) totalFibra += nutrientes.get("FIBTG").getQuantity();
+                        if (nutrientes.containsKey("SUGAR")) totalAcucar += nutrientes.get("SUGAR").getQuantity();
+                        if (nutrientes.containsKey("NA")) totalSodio += nutrientes.get("NA").getQuantity();
+                        if (nutrientes.containsKey("FASAT")) totalGorduraSaturada += nutrientes.get("FASAT").getQuantity();
                     }
                 }
 
@@ -84,6 +78,11 @@ public class EdamamService {
                 infoFinal.setProteinas(totalProteinas);
                 infoFinal.setCarboidratos(totalCarboidratos);
                 infoFinal.setGorduras(totalGorduras);
+
+                infoFinal.setFibra(totalFibra);
+                infoFinal.setAcucar(totalAcucar);
+                infoFinal.setSodio(totalSodio);
+                infoFinal.setGorduraSaturada(totalGorduraSaturada);
 
                 return infoFinal;
             }

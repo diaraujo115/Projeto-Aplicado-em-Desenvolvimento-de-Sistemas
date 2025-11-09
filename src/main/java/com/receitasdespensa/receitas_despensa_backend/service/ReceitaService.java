@@ -1,12 +1,12 @@
 package com.receitasdespensa.receitas_despensa_backend.service;
 
+import com.receitasdespensa.receitas_despensa_backend.dto.InformacaoNutricionalDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.ReceitaIngredienteDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.ReceitaResponseDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.UsuarioDTO;
-import com.receitasdespensa.receitas_despensa_backend.model.Receita;
-import com.receitasdespensa.receitas_despensa_backend.model.ReceitaIngrediente;
-import com.receitasdespensa.receitas_despensa_backend.model.Usuario;
+import com.receitasdespensa.receitas_despensa_backend.model.*;
 import com.receitasdespensa.receitas_despensa_backend.repository.ClassificacaoRepository;
+import com.receitasdespensa.receitas_despensa_backend.repository.IngredienteRepository;
 import com.receitasdespensa.receitas_despensa_backend.repository.ReceitaRepository;
 import com.receitasdespensa.receitas_despensa_backend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +31,11 @@ public class ReceitaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // READ (Listar todas as receitas)
-//    public List<Receita> listarTodas() {
-//        return receitaRepository.findAll();
-//    }
+    @Autowired
+    private EdamamService edamamService;
+
+    @Autowired
+    private IngredienteRepository ingredienteRepository;
 
     public List<Receita> listarTodas(String categoria, String dieta) {
         return receitaRepository.findByFilters(categoria, dieta);
@@ -50,10 +51,8 @@ public class ReceitaService {
 
         Receita receita = receitaOpt.get();
 
-        // Calcula a média de avaliações usando nosso novo método
         Double media = classificacaoRepository.findAverageNotaByReceitaId(id);
 
-        // Mapeia a entidade para o DTO
         ReceitaResponseDTO dto = new ReceitaResponseDTO();
         dto.setId(receita.getId());
         dto.setTitulo(receita.getTitulo());
@@ -62,19 +61,17 @@ public class ReceitaService {
         dto.setCategoria(receita.getCategoria());
         dto.setDieta(receita.getDieta());
         dto.setDataCriacao(receita.getDataCriacao());
+        dto.setInformacaoNutricional(receita.getInformacaoNutricional());
 
-        // Seta a média (arredondando para 2 casas decimais, se não for nula)
         if (media != null) {
             dto.setMediaAvaliacoes(Math.round(media * 100.0) / 100.0);
         }
 
-        // Mapeia o usuário
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         usuarioDTO.setId(receita.getUsuario().getId());
         usuarioDTO.setNome(receita.getUsuario().getNome());
         dto.setUsuario(usuarioDTO);
 
-        // Mapeia a lista de ingredientes
         List<ReceitaIngredienteDTO> ingredientesDTO = receita.getIngredientes().stream().map(ri -> {
             ReceitaIngredienteDTO riDto = new ReceitaIngredienteDTO();
             riDto.setNomeIngrediente(ri.getIngrediente().getNome());
@@ -88,54 +85,70 @@ public class ReceitaService {
     }
 
 
-    // CREATE (Criar uma nova receita)
-    public Receita criar(Receita receita) {
 
+    public Receita criar(Receita receita) {
         Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         receita.setUsuario(usuarioLogado);
-
         if (receita.getIngredientes() != null) {
             for (ReceitaIngrediente ingredienteDaReceita : receita.getIngredientes()) {
                 ingredienteDaReceita.setReceita(receita);
             }
         }
 
-        Receita receitaSalva = receitaRepository.save(receita);
+        List<String> ingredientesParaApi = receita.getIngredientes().stream()
+                .map(ri -> {
+                    String qtd = ri.getQuantidade();
+                    String unidadeEn = edamamService.traduzirUnidade(ri.getUnidade());
+                    Ingrediente ing = ingredienteRepository.findById(ri.getIngrediente().getId()).orElse(null);
+                    String nomeEn = (ing != null && ing.getNomeEn() != null) ? ing.getNomeEn() : ri.getIngrediente().getNome(); // Fallback
 
-        return receitaRepository.findByIdWithIngredientes(receitaSalva.getId()).get();
+                    return qtd + " " + unidadeEn + " " + nomeEn;
+                })
+                .collect(Collectors.toList());
 
+        InformacaoNutricionalDTO infoDto = edamamService.getInformacoesNutricionais(ingredientesParaApi);
 
+        if (infoDto != null) {
+            InformacaoNutricional infoEntity = new InformacaoNutricional();
+            infoEntity.setCalorias(infoDto.getCalorias());
+            infoEntity.setProteinas(infoDto.getProteinas());
+            infoEntity.setCarboidratos(infoDto.getCarboidratos());
+            infoEntity.setGorduras(infoDto.getGorduras());
+            infoEntity.setFibra(infoDto.getFibra());
+            infoEntity.setAcucar(infoDto.getAcucar());
+            infoEntity.setSodio(infoDto.getSodio());
+            infoEntity.setGorduraSaturada(infoDto.getGorduraSaturada());
+
+            infoEntity.setReceita(receita);
+            receita.setInformacaoNutricional(infoEntity);
+        }
+
+        return receitaRepository.save(receita);
     }
 
-    // DELETE (Deletar uma receita)
     public void deletar(Integer id) {
         // Futuramente, adicionaremos uma verificação para ver se o usuário logado é o dono da receita.
         receitaRepository.deleteById(id);
     }
 
     public void salvarReceita(Integer receitaId) {
-        // Pega o usuário 'principal' (pode estar detached) do contexto
         Usuario usuarioPrincipal = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // CORREÇÃO: Busca uma instância 'fresca' e 'viva' (managed) do usuário e da receita
-        // A anotação @Transactional garante que a sessão do banco estará aberta aqui.
+
         Usuario usuarioLogado = usuarioRepository.findById(usuarioPrincipal.getId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
         Receita receita = receitaRepository.findById(receitaId)
                 .orElseThrow(() -> new RuntimeException("Receita não encontrada!"));
 
-        // Agora podemos inicializar e modificar a coleção lazy sem erros
+
         usuarioLogado.getReceitasSalvas().add(receita);
 
-        // O save não é estritamente necessário aqui dentro de uma transação,
-        // mas é uma boa prática para clareza.
         usuarioRepository.save(usuarioLogado);
     }
 
     public void removerReceitaSalva(Integer receitaId) {
         Usuario usuarioPrincipal = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // Mesma lógica de busca para garantir que estamos trabalhando com entidades 'vivas'
         Usuario usuarioLogado = usuarioRepository.findById(usuarioPrincipal.getId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
         Receita receita = receitaRepository.findById(receitaId)
@@ -148,7 +161,7 @@ public class ReceitaService {
 
     public List<Receita> recomendarPorIngredientes(List<Integer> idsIngredientes) {
         if (idsIngredientes == null || idsIngredientes.isEmpty()) {
-            return List.of(); // Retorna uma lista vazia se nenhum ingrediente for fornecido
+            return List.of();
         }
         return receitaRepository.findReceitasByIngredientes(idsIngredientes);
     }
@@ -156,12 +169,9 @@ public class ReceitaService {
     public boolean isReceitaSalvaPeloUsuarioLogado(Integer receitaId) {
         Usuario usuarioPrincipal = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // Busca a instância gerenciada do usuário para acessar a coleção lazy
         Usuario usuarioLogado = usuarioRepository.findById(usuarioPrincipal.getId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
 
-        // Verifica se a coleção 'receitasSalvas' contém uma receita com o ID fornecido
-        // O '.stream().anyMatch()' é uma forma eficiente de verificar sem carregar todas as receitas salvas
         return usuarioLogado.getReceitasSalvas().stream()
                 .anyMatch(receita -> receita.getId().equals(receitaId));
     }

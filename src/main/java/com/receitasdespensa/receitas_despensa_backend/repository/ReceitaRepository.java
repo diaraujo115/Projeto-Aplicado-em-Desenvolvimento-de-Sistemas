@@ -13,7 +13,11 @@ import java.util.Optional;
 @Repository
 public interface ReceitaRepository extends JpaRepository<Receita, Integer> {
 
-    @Query("SELECT r FROM Receita r LEFT JOIN FETCH r.ingredientes ri LEFT JOIN FETCH ri.ingrediente WHERE r.id = :id")
+    @Query("SELECT r FROM Receita r " +
+            "LEFT JOIN FETCH r.ingredientes ri " +
+            "LEFT JOIN FETCH ri.ingrediente " +
+            "LEFT JOIN FETCH r.informacaoNutricional " +
+            "WHERE r.id = :id")
     Optional<Receita> findByIdWithIngredientes(@Param("id") Integer id);
 
 
