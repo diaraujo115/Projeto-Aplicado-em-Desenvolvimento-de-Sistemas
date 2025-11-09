@@ -121,34 +121,34 @@ public class ReceitaController {
         return ResponseEntity.ok(receitasRecomendadas);
     }
 
-    @GetMapping("/{id}/informacoes-nutricionais")
-    public ResponseEntity<InformacaoNutricionalDTO> getInformacoesNutricionais(@PathVariable Integer id) {
-        // Busca a receita completa com os ingredientes
-        Optional<Receita> receitaOpt = receitaService.buscarPorId(id)
-                .map(dto -> receitaRepository.findByIdWithIngredientes(dto.getId()).orElse(null)); // Converte DTO de volta para Entidade para pegar os ingredientes
-
-        if (receitaOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // Formata a lista de ingredientes para o padrão da Edamam (ex: "1 cup flour")
-        List<String> ingredientesParaApi = receitaOpt.get().getIngredientes().stream()
-                .map(ri -> ri.getQuantidade() + " " + ri.getUnidade() + " " + ri.getIngrediente().getNome())
-                .collect(Collectors.toList());
-
-        if (ingredientesParaApi.isEmpty()) {
-            // Retorna um objeto vazio ou uma mensagem de erro apropriada
-            return ResponseEntity.badRequest().build();
-        }
-
-        InformacaoNutricionalDTO info = edamamService.getInformacoesNutricionais(ingredientesParaApi);
-
-        if (info == null) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build(); // MSG006
-        }
-
-        return ResponseEntity.ok(info);
-    }
+//    @GetMapping("/{id}/informacoes-nutricionais")
+//    public ResponseEntity<InformacaoNutricionalDTO> getInformacoesNutricionais(@PathVariable Integer id) {
+//        // Busca a receita completa com os ingredientes
+//        Optional<Receita> receitaOpt = receitaService.buscarPorId(id)
+//                .map(dto -> receitaRepository.findByIdWithIngredientes(dto.getId()).orElse(null)); // Converte DTO de volta para Entidade para pegar os ingredientes
+//
+//        if (receitaOpt.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        // Formata a lista de ingredientes para o padrão da Edamam (ex: "1 cup flour")
+//        List<String> ingredientesParaApi = receitaOpt.get().getIngredientes().stream()
+//                .map(ri -> ri.getQuantidade() + " " + ri.getUnidade() + " " + ri.getIngrediente().getNome())
+//                .collect(Collectors.toList());
+//
+//        if (ingredientesParaApi.isEmpty()) {
+//            // Retorna um objeto vazio ou uma mensagem de erro apropriada
+//            return ResponseEntity.badRequest().build();
+//        }
+//
+//        InformacaoNutricionalDTO info = edamamService.getInformacoesNutricionais(ingredientesParaApi);
+//
+//        if (info == null) {
+//            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build(); // MSG006
+//        }
+//
+//        return ResponseEntity.ok(info);
+//    }
 
     @GetMapping("/{receitaId}/minha-classificacao")
     public ResponseEntity<Map<String, Integer>> getMinhaClassificacao(@PathVariable Integer receitaId) {
@@ -182,5 +182,47 @@ public class ReceitaController {
 
         List<Receita> receitas = receitaService.buscarPorTitulo(query);
         return ResponseEntity.ok(receitas);
+    }
+
+    @GetMapping("/{id}/informacoes-nutricionais")
+    public ResponseEntity<InformacaoNutricionalDTO> getInformacoesNutricionais(@PathVariable Integer id) {
+
+        Optional<Receita> receitaOpt = receitaRepository.findByIdWithIngredientes(id); // Busca a receita com todos os dados
+
+        if (receitaOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // === LÓGICA DE TRADUÇÃO ===
+        List<String> ingredientesParaApi = receitaOpt.get().getIngredientes().stream()
+                .map(ri -> {
+                    String qtd = ri.getQuantidade();
+                    // Traduz a unidade usando o serviço
+                    String unidadeEn = edamamService.traduzirUnidade(ri.getUnidade());
+                    // Pega o nome em inglês da entidade
+                    String nomeEn = ri.getIngrediente().getNomeEn();
+
+                    // Fallback: Se não houver tradução, usa o nome original
+                    if (nomeEn == null || nomeEn.trim().isEmpty()) {
+                        nomeEn = ri.getIngrediente().getNome();
+                    }
+
+                    // Monta a string final em inglês
+                    return qtd + " " + unidadeEn + " " + nomeEn;
+                })
+                .collect(Collectors.toList());
+        // === FIM DA LÓGICA DE TRADUÇÃO ===
+
+        if (ingredientesParaApi.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        InformacaoNutricionalDTO info = edamamService.getInformacoesNutricionais(ingredientesParaApi);
+
+        if (info == null) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
+
+        return ResponseEntity.ok(info);
     }
 }

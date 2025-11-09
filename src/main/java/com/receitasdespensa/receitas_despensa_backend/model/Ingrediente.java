@@ -14,4 +14,7 @@ public class Ingrediente {
 
     @Column(nullable = false, length = 100)
     private String nome;
+
+    @Column(name = "nome_en")
+    private String nomeEn;
 }
