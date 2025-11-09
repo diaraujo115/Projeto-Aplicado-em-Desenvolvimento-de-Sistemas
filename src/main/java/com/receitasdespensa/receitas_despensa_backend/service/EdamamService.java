@@ -1,13 +1,11 @@
 package com.receitasdespensa.receitas_despensa_backend.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.receitasdespensa.receitas_despensa_backend.dto.EdamamResponseDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.InformacaoNutricionalDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.IngredientDetail;
 import com.receitasdespensa.receitas_despensa_backend.dto.NutrienteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,18 +26,60 @@ public class EdamamService {
 
     private final String API_URL = "https://api.edamam.com/api/nutrition-details";
 
-    private static final Map<String, String> UNIDADE_TRADUCOES = Map.of(
-            "gramas", "grams",
-            "g", "g",
-            "xícara", "cup",
-            "xícaras", "cups",
-            "unidade", "unit",
-            "unidades", "units",
-            "colher de sopa", "tablespoon",
-            "colher de chá", "teaspoon",
-            "lata", "can",
-            "inteiro", "whole"
+    private static final Map<String, String> UNIDADE_TRADUCOES = Map.ofEntries(
+
+            Map.entry("gramas", "grams"),
+            Map.entry("grama", "gram"),
+            Map.entry("g", "g"),
+            Map.entry("kg", "kg"),
+            Map.entry("quilo", "kilogram"),
+            Map.entry("quilos", "kilograms"),
+
+
+            Map.entry("xícara", "cup"),
+            Map.entry("xícaras", "cups"),
+            Map.entry("colher de sopa", "tablespoon"),
+            Map.entry("colheres de sopa", "tablespoons"),
+            Map.entry("colher de chá", "teaspoon"),
+            Map.entry("colheres de chá", "teaspoons"),
+            Map.entry("colher", "spoon"),
+            Map.entry("colheres", "spoons"),
+
+
+            Map.entry("litro", "liter"),
+            Map.entry("litros", "liters"),
+            Map.entry("l", "l"),
+            Map.entry("mililitro", "milliliter"),
+            Map.entry("mililitros", "milliliters"),
+            Map.entry("ml", "ml"),
+
+
+            Map.entry("unidade", "unit"),
+            Map.entry("unidades", "units"),
+            Map.entry("inteiro", "whole"),
+            Map.entry("inteiros", "wholes"),
+            Map.entry("fatia", "slice"),
+            Map.entry("fatias", "slices"),
+            Map.entry("pedaço", "piece"),
+            Map.entry("pedaços", "pieces"),
+
+
+            Map.entry("lata", "can"),
+            Map.entry("latas", "cans"),
+            Map.entry("pitada", "pinch"),
+            Map.entry("pitadas", "pinches"),
+            Map.entry("copo", "glass"),
+            Map.entry("copos", "glasses"),
+            Map.entry("tablete", "tablet"),
+            Map.entry("tabletes", "tablets"),
+            Map.entry("pacote", "package"),
+            Map.entry("pacotes", "packages"),
+            Map.entry("caixa", "box"),
+            Map.entry("caixas", "boxes"),
+            Map.entry("gota", "drop"),
+            Map.entry("gotas", "drops")
     );
+
 
     public InformacaoNutricionalDTO getInformacoesNutricionais(List<String> ingredientes) {
         String url = API_URL + "?app_id=" + appId + "&app_key=" + appKey;
@@ -83,6 +123,7 @@ public class EdamamService {
                 infoFinal.setAcucar(totalAcucar);
                 infoFinal.setSodio(totalSodio);
                 infoFinal.setGorduraSaturada(totalGorduraSaturada);
+                infoFinal.setYield(edamamResponse.getYield());
 
                 return infoFinal;
             }

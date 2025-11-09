@@ -16,4 +16,7 @@ public class EdamamResponseDTO {
     // Agora vamos capturar a lista de ingredientes
     @JsonProperty("ingredients")
     private List<IngredientDetail> ingredients;
+
+    @JsonProperty("yield")
+    private Double yield;
 }

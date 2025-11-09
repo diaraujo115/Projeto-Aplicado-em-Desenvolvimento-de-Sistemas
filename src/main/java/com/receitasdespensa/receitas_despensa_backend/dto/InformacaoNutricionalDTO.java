@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class InformacaoNutricionalDTO {
-    // Apenas os campos que queremos na nossa resposta final
+
     private Double calorias;
     private Double proteinas;
     private Double carboidratos;
@@ -15,4 +15,6 @@ public class InformacaoNutricionalDTO {
     private Double acucar;
     private Double sodio;
     private Double gorduraSaturada;
+
+    private Double yield;
 }

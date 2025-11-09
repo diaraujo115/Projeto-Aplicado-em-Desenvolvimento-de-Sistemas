@@ -43,4 +43,7 @@ public class InformacaoNutricional implements Serializable {
 
     @Column(name = "gordura_saturada")
     private Double gorduraSaturada;
+
+    @Column(name = "porcoes")
+    private Integer porcoes;
 }

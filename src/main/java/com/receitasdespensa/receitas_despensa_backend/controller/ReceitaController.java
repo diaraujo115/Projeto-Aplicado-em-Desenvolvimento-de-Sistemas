@@ -121,34 +121,6 @@ public class ReceitaController {
         return ResponseEntity.ok(receitasRecomendadas);
     }
 
-//    @GetMapping("/{id}/informacoes-nutricionais")
-//    public ResponseEntity<InformacaoNutricionalDTO> getInformacoesNutricionais(@PathVariable Integer id) {
-//        // Busca a receita completa com os ingredientes
-//        Optional<Receita> receitaOpt = receitaService.buscarPorId(id)
-//                .map(dto -> receitaRepository.findByIdWithIngredientes(dto.getId()).orElse(null)); // Converte DTO de volta para Entidade para pegar os ingredientes
-//
-//        if (receitaOpt.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        // Formata a lista de ingredientes para o padrão da Edamam (ex: "1 cup flour")
-//        List<String> ingredientesParaApi = receitaOpt.get().getIngredientes().stream()
-//                .map(ri -> ri.getQuantidade() + " " + ri.getUnidade() + " " + ri.getIngrediente().getNome())
-//                .collect(Collectors.toList());
-//
-//        if (ingredientesParaApi.isEmpty()) {
-//            // Retorna um objeto vazio ou uma mensagem de erro apropriada
-//            return ResponseEntity.badRequest().build();
-//        }
-//
-//        InformacaoNutricionalDTO info = edamamService.getInformacoesNutricionais(ingredientesParaApi);
-//
-//        if (info == null) {
-//            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build(); // MSG006
-//        }
-//
-//        return ResponseEntity.ok(info);
-//    }
 
     @GetMapping("/{receitaId}/minha-classificacao")
     public ResponseEntity<Map<String, Integer>> getMinhaClassificacao(@PathVariable Integer receitaId) {

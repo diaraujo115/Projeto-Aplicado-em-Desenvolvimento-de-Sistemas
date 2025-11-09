@@ -17,4 +17,10 @@ public class Ingrediente {
 
     @Column(name = "nome_en")
     private String nomeEn;
+
+    @Column(name = "is_vegetariano")
+    private boolean isVegetariano = true;
+
+    @Column(name = "is_vegano")
+    private boolean isVegano = true;
 }
