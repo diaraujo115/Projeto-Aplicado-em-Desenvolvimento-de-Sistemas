@@ -27,7 +27,7 @@ public interface ReceitaRepository extends JpaRepository<Receita, Integer> {
 
     @Query("SELECT r FROM Receita r WHERE " +
             "(:categoria IS NULL OR :categoria = '' OR r.categoria = :categoria) AND " +
-            "(:dieta IS NULL OR :dieta = '' OR r.dieta = :dieta)")
+            "(:dieta IS NULL OR :dieta = '' OR r.dieta LIKE CONCAT('%', :dieta, '%'))")
     List<Receita> findByFilters(
             @Param("categoria") String categoria,
             @Param("dieta") String dieta

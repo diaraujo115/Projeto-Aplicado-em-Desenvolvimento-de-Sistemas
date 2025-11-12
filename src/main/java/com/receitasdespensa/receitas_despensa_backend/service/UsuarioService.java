@@ -41,16 +41,16 @@ public class UsuarioService implements UserDetailsService {
 
     // MÉTODO DE AUTENTICAÇÃO
     public String autenticar(LoginRequestDTO loginRequest) {
-        // 1. Busca o usuário pelo email no banco de dados
         Usuario usuario = usuarioRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Email ou senha inválidos"));
 
-        // 2. Compara a senha enviada no login com a senha criptografada no banco
+        if (!usuario.isAtivo()) {
+            throw new UsernameNotFoundException("Email ou senha inválidos");
+        }
+
         if (passwordEncoder.matches(loginRequest.getSenha(), usuario.getPassword())) {
-            // 3. Se as senhas baterem, gera e retorna o token JWT
             return jwtService.gerarToken(usuario);
         } else {
-            // 4. Se não baterem, lança uma exceção
             throw new UsernameNotFoundException("Email ou senha inválidos");
         }
     }

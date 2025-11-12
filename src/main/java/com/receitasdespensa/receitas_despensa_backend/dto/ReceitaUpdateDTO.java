@@ -9,6 +9,6 @@ public class ReceitaUpdateDTO {
     private String descricao;
     private String modoPreparo;
     private String categoria;
-    private String dieta;
+
     private List<IngredienteUpdateDTO> ingredientes;
 }

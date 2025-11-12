@@ -1,9 +1,6 @@
 package com.receitasdespensa.receitas_despensa_backend.service;
 
-import com.receitasdespensa.receitas_despensa_backend.dto.InformacaoNutricionalDTO;
-import com.receitasdespensa.receitas_despensa_backend.dto.ReceitaIngredienteDTO;
-import com.receitasdespensa.receitas_despensa_backend.dto.ReceitaResponseDTO;
-import com.receitasdespensa.receitas_despensa_backend.dto.UsuarioDTO;
+import com.receitasdespensa.receitas_despensa_backend.dto.*;
 import com.receitasdespensa.receitas_despensa_backend.model.*;
 import com.receitasdespensa.receitas_despensa_backend.repository.ClassificacaoRepository;
 import com.receitasdespensa.receitas_despensa_backend.repository.IngredienteRepository;
@@ -14,9 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +39,6 @@ public class ReceitaService {
     }
 
     public Optional<ReceitaResponseDTO> buscarPorId(Integer id) {
-        // Usamos o método que já garante o carregamento dos ingredientes
         Optional<Receita> receitaOpt = receitaRepository.findByIdWithIngredientes(id);
 
         if (receitaOpt.isEmpty()) {
@@ -78,6 +73,7 @@ public class ReceitaService {
             riDto.setNomeIngrediente(ri.getIngrediente().getNome());
             riDto.setQuantidade(ri.getQuantidade());
             riDto.setUnidade(ri.getUnidade());
+            riDto.setIngredienteId(ri.getIngrediente().getId());
             return riDto;
         }).collect(Collectors.toList());
         dto.setIngredientes(ingredientesDTO);
@@ -90,103 +86,28 @@ public class ReceitaService {
         receita.setUsuario(usuarioLogado);
 
 
-        List<String> ingredientesParaApi = new ArrayList<>();
-        boolean isReceitaVegana = true;
-        boolean isReceitaVegetariana = true;
-
         if (receita.getIngredientes() != null) {
             for (ReceitaIngrediente ingredienteDaReceita : receita.getIngredientes()) {
                 ingredienteDaReceita.setReceita(receita);
-
-                Ingrediente ingCompleto = ingredienteRepository.findById(ingredienteDaReceita.getIngrediente().getId())
-                        .orElseThrow(() -> new RuntimeException("Ingrediente não encontrado: " + ingredienteDaReceita.getIngrediente().getId()));
-
-                if (!ingCompleto.isVegano()) {
-                    isReceitaVegana = false;
-                }
-                if (!ingCompleto.isVegetariano()) {
-                    isReceitaVegetariana = false;
-                }
-
-                String qtd = ingredienteDaReceita.getQuantidade();
-                String unidadeEn = edamamService.traduzirUnidade(ingredienteDaReceita.getUnidade());
-                String nomeEn = (ingCompleto.getNomeEn() != null) ? ingCompleto.getNomeEn() : ingCompleto.getNome(); // Fallback
-
-                ingredientesParaApi.add(qtd + " " + unidadeEn + " " + nomeEn);
             }
         }
 
-        InformacaoNutricionalDTO infoDto = edamamService.getInformacoesNutricionais(ingredientesParaApi);
+        calcularEPreencherNutrientes(receita);
 
-        List<String> tagsDeDieta = new ArrayList<>();
-
-        if (isReceitaVegana) {
-            tagsDeDieta.add("Vegana");
-        } else if (isReceitaVegetariana) {
-            tagsDeDieta.add("Vegetariana");
-        }
-
-        if (infoDto != null) {
-            InformacaoNutricional infoEntity = new InformacaoNutricional();
-
-            // Define o número de porções (default = 1)
-            double porcoes = (infoDto.getYield() != null && infoDto.getYield() > 0) ? infoDto.getYield() : 1.0;
-            infoEntity.setPorcoes((int) porcoes);
-
-            // Salva os totais
-            infoEntity.setCalorias(infoDto.getCalorias());
-            infoEntity.setProteinas(infoDto.getProteinas());
-            infoEntity.setCarboidratos(infoDto.getCarboidratos());
-            infoEntity.setGorduras(infoDto.getGorduras());
-            infoEntity.setFibra(infoDto.getFibra());
-            infoEntity.setAcucar(infoDto.getAcucar());
-            infoEntity.setSodio(infoDto.getSodio());
-            infoEntity.setGorduraSaturada(infoDto.getGorduraSaturada());
-
-            // --- Lógica de Tags Nutricionais (Baseada em Porção) ---
-            // (Estes são valores de exemplo, você pode ajustá-los)
-            double caloriasPorPorcao = infoDto.getCalorias() / porcoes;
-            double carbsPorPorcao = infoDto.getCarboidratos() / porcoes;
-            double sodioPorPorcao = infoDto.getSodio() / porcoes;
-            double acucarPorPorcao = infoDto.getAcucar() / porcoes;
-            double gorduraPorPorcao = infoDto.getGorduras() / porcoes;
-
-            if (caloriasPorPorcao <= 400) {
-                tagsDeDieta.add("Baixo Calórico");
-            }
-            if (carbsPorPorcao <= 20) {
-                tagsDeDieta.add("Low Carb");
-            }
-            if (sodioPorPorcao <= 500) {
-                tagsDeDieta.add("Baixo Sódio");
-            }
-            if (acucarPorPorcao <= 10) {
-                tagsDeDieta.add("Baixo Açúcar");
-            }
-            if (gorduraPorPorcao <= 15) {
-                tagsDeDieta.add("Baixa Gordura");
-            }
-            // ... (Adicione mais regras se quiser)
-
-            // Faz a ligação bidirecional
-            infoEntity.setReceita(receita);
-            receita.setInformacaoNutricional(infoEntity);
-        }
-
-        // 6. Define o campo 'dieta' da receita com as tags calculadas
-        // O usuário ainda seleciona a CATEGORIA, mas nós definimos a DIETA
-        if (tagsDeDieta.isEmpty()) {
-            tagsDeDieta.add("Nenhuma"); // Valor padrão
-        }
-        receita.setDieta(String.join(", ", tagsDeDieta)); // Ex: "Vegetariana, Low Carb"
-
-        // 7. Salva a Receita (e o CascadeType.ALL salvará a InfoNutricional junto)
         return receitaRepository.save(receita);
     }
 
     public void deletar(Integer id) {
-        // Futuramente, adicionaremos uma verificação para ver se o usuário logado é o dono da receita.
-        receitaRepository.deleteById(id);
+        Receita receita = receitaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Receita não encontrada!"));
+
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!receita.getUsuario().getId().equals(usuarioLogado.getId())) {
+            throw new RuntimeException("Acesso negado: Você não é o autor desta receita.");
+        }
+
+        receitaRepository.delete(receita);
     }
 
     public void salvarReceita(Integer receitaId) {
@@ -241,5 +162,151 @@ public class ReceitaService {
 
     public List<Receita> buscarPorTitulo(String termoDeBusca) {
         return receitaRepository.findByTituloContainingIgnoreCase(termoDeBusca);
+    }
+
+    public Receita atualizar(Integer receitaId, ReceitaUpdateDTO dto) {
+        Receita receita = receitaRepository.findByIdWithIngredientes(receitaId)
+                .orElseThrow(() -> new RuntimeException("Receita não encontrada!"));
+
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!receita.getUsuario().getId().equals(usuarioLogado.getId())) {
+            throw new RuntimeException("Acesso negado: Você não é o autor desta receita.");
+        }
+
+        receita.setTitulo(dto.getTitulo());
+        receita.setDescricao(dto.getDescricao());
+        receita.setCategoria(dto.getCategoria());
+
+        receita.setModoPreparo(dto.getModoPreparo());
+
+        Map<Integer, IngredienteUpdateDTO> ingredientesDtoMap = dto.getIngredientes().stream()
+                .collect(Collectors.toMap(IngredienteUpdateDTO::getIngredienteId, Function.identity()));
+
+        receita.getIngredientes().removeIf(receitaIngrediente -> {
+            int id = receitaIngrediente.getIngrediente().getId();
+            if (ingredientesDtoMap.containsKey(id)) {
+                IngredienteUpdateDTO updateDto = ingredientesDtoMap.get(id);
+                receitaIngrediente.setQuantidade(updateDto.getQuantidade());
+                receitaIngrediente.setUnidade(updateDto.getUnidade());
+                ingredientesDtoMap.remove(id);
+                return false;
+            } else {
+                return true;
+            }
+        });
+
+        for (IngredienteUpdateDTO newIngredienteDto : ingredientesDtoMap.values()) {
+            Ingrediente ingrediente = ingredienteRepository.findById(newIngredienteDto.getIngredienteId())
+                    .orElseThrow(() -> new RuntimeException("Ingrediente não encontrado!"));
+            ReceitaIngrediente novoReceitaIngrediente = new ReceitaIngrediente();
+            novoReceitaIngrediente.setReceita(receita);
+            novoReceitaIngrediente.setIngrediente(ingrediente);
+            novoReceitaIngrediente.setQuantidade(newIngredienteDto.getQuantidade());
+            novoReceitaIngrediente.setUnidade(newIngredienteDto.getUnidade());
+            receita.getIngredientes().add(novoReceitaIngrediente);
+        }
+        calcularEPreencherNutrientes(receita);
+        return receitaRepository.save(receita);
+    }
+
+    private void calcularEPreencherNutrientes(Receita receita) {
+        // --- Início da Lógica Movida ---
+        List<String> ingredientesParaApi = new ArrayList<>();
+        boolean isReceitaVegana = true;
+        boolean isReceitaVegetariana = true;
+
+        if (receita.getIngredientes() != null) {
+            for (ReceitaIngrediente ingredienteDaReceita : receita.getIngredientes()) {
+                // Busca o ingrediente completo do banco
+                Ingrediente ingCompleto = ingredienteRepository.findById(ingredienteDaReceita.getIngrediente().getId())
+                        .orElseThrow(() -> new RuntimeException("Ingrediente não encontrado: " + ingredienteDaReceita.getIngrediente().getId()));
+
+                if (!ingCompleto.isVegano()) isReceitaVegana = false;
+                if (!ingCompleto.isVegetariano()) isReceitaVegetariana = false;
+
+                // Monta a string traduzida para a API Edamam
+                String qtd = ingredienteDaReceita.getQuantidade();
+                String unidadeEn = edamamService.traduzirUnidade(ingredienteDaReceita.getUnidade());
+                String nomeEn = (ingCompleto.getNomeEn() != null) ? ingCompleto.getNomeEn() : ingCompleto.getNome();
+
+                ingredientesParaApi.add(qtd + " " + unidadeEn + " " + nomeEn);
+            }
+        }
+
+        InformacaoNutricionalDTO infoDto = edamamService.getInformacoesNutricionais(ingredientesParaApi);
+        List<String> tagsDeDieta = new ArrayList<>();
+
+        if (isReceitaVegana) tagsDeDieta.add("Vegana");
+        else if (isReceitaVegetariana) tagsDeDieta.add("Vegetariana");
+
+        if (infoDto != null) {
+            // Pega a info nutricional existente ou cria uma nova
+            InformacaoNutricional infoEntity = receita.getInformacaoNutricional();
+            if (infoEntity == null) {
+                infoEntity = new InformacaoNutricional();
+            }
+
+            double porcoes = (infoDto.getYield() != null && infoDto.getYield() > 0) ? infoDto.getYield() : 1.0;
+            infoEntity.setPorcoes((int) porcoes);
+
+            // ... (seta todos os campos: calorias, proteinas, carboidratos, gorduras, etc.) ...
+            infoEntity.setCalorias(infoDto.getCalorias());
+            infoEntity.setProteinas(infoDto.getProteinas());
+            infoEntity.setCarboidratos(infoDto.getCarboidratos());
+            infoEntity.setGorduras(infoDto.getGorduras());
+            infoEntity.setFibra(infoDto.getFibra());
+            infoEntity.setAcucar(infoDto.getAcucar());
+            infoEntity.setSodio(infoDto.getSodio());
+            infoEntity.setGorduraSaturada(infoDto.getGorduraSaturada());
+
+
+            double caloriasPorPorcao = infoDto.getCalorias() / porcoes;
+            double carbsPorPorcao = infoDto.getCarboidratos() / porcoes;
+            double sodioPorPorcao = infoDto.getSodio() / porcoes;
+            double acucarPorPorcao = infoDto.getAcucar() / porcoes;
+            double gorduraPorPorcao = infoDto.getGorduras() / porcoes;
+
+            if (caloriasPorPorcao <= 400) {
+                tagsDeDieta.add("Baixo Calórico");
+            }
+
+            if (carbsPorPorcao <= 20) {
+                tagsDeDieta.add("Baixo carboidrato");
+            }
+
+            if (sodioPorPorcao <= 500) {
+                tagsDeDieta.add("Baixo Sódio");
+            }
+
+            if (acucarPorPorcao <= 10) {
+                tagsDeDieta.add("Baixo Açúcar");
+            }
+
+            if (gorduraPorPorcao <= 15) {
+                tagsDeDieta.add("Baixa Gordura");
+            }
+
+            infoEntity.setReceita(receita);
+            receita.setInformacaoNutricional(infoEntity);
+        }
+
+        if (tagsDeDieta.isEmpty()) tagsDeDieta.add("Nenhuma");
+        receita.setDieta(String.join(", ", tagsDeDieta));
+
+    }
+
+    public Set<String> getTagsDeDietaDisponiveis() {
+
+        List<Receita> receitas = receitaRepository.findAll();
+
+
+        return receitas.stream()
+
+                .map(Receita::getDieta)
+                .filter(dieta -> dieta != null && !dieta.isEmpty())
+                .flatMap(dieta -> Arrays.stream(dieta.split(",")))
+                .map(String::trim)
+                .filter(tag -> !tag.equalsIgnoreCase("Nenhuma"))
+                .collect(Collectors.toSet());
     }
 }

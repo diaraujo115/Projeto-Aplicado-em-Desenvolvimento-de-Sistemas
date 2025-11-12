@@ -2,6 +2,7 @@ package com.receitasdespensa.receitas_despensa_backend.controller;
 
 import com.receitasdespensa.receitas_despensa_backend.dto.InformacaoNutricionalDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.ReceitaResponseDTO;
+import com.receitasdespensa.receitas_despensa_backend.dto.ReceitaUpdateDTO;
 import com.receitasdespensa.receitas_despensa_backend.model.Classificacao;
 import com.receitasdespensa.receitas_despensa_backend.model.Comentario;
 import com.receitasdespensa.receitas_despensa_backend.model.Receita;
@@ -19,11 +20,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/receitas")
-@CrossOrigin(origins = "http://localhost:4200")
+
 public class ReceitaController {
 
     @Autowired
@@ -46,11 +48,6 @@ public class ReceitaController {
         Receita novaReceita = receitaService.criar(receita);
         return new ResponseEntity<>(novaReceita, HttpStatus.CREATED);
     }
-
-//    @GetMapping
-//    public ResponseEntity<List<Receita>> listarTodas() {
-//        return ResponseEntity.ok(receitaService.listarTodas());
-//    }
 
     @GetMapping
     public ResponseEntity<List<Receita>> listarTodas(
@@ -127,10 +124,10 @@ public class ReceitaController {
         Optional<Classificacao> classificacaoOpt = classificacaoService.buscarMinhaClassificacao(receitaId);
 
         if (classificacaoOpt.isPresent()) {
-            // Retorna um JSON simples: { "nota": X }
+
             return ResponseEntity.ok(Map.of("nota", classificacaoOpt.get().getNota()));
         } else {
-            // Se o usuário ainda não classificou, retorna not found ou um objeto vazio
+
             return ResponseEntity.notFound().build();
         }
     }
@@ -190,5 +187,32 @@ public class ReceitaController {
         }
 
         return ResponseEntity.ok(info);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Receita> atualizar(
+            @PathVariable Integer id,
+            @RequestBody ReceitaUpdateDTO dto) {
+
+        try {
+            Receita receitaAtualizada = receitaService.atualizar(id, dto);
+            return ResponseEntity.ok(receitaAtualizada);
+        } catch (RuntimeException e) {
+
+            if (e.getMessage().contains("Acesso negado")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            if (e.getMessage().contains("Receita não encontrada")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/dietas")
+    public ResponseEntity<Set<String>> getDietasDisponiveis() {
+        Set<String> dietas = receitaService.getTagsDeDietaDisponiveis();
+        return ResponseEntity.ok(dietas);
     }
 }

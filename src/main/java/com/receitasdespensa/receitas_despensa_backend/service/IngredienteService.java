@@ -19,20 +19,17 @@ public class IngredienteService {
 
 
     public List<Ingrediente> listarTodas() {
-        return ingredienteRepository.findAll();
+        return ingredienteRepository.findAllByOrderByNomeAsc();
     }
 
-    // READ (Buscar uma receita por ID)
     public Optional<Ingrediente> buscarPorId(Integer id) {
         return ingredienteRepository.findById(id);
     }
 
-    // CREATE (Criar uma nova receita)
     public Ingrediente criar(Ingrediente ingrediente) {
         return ingredienteRepository.save(ingrediente);
     }
 
-    // DELETE (Deletar uma receita)
     public void deletar(Integer id) {
         ingredienteRepository.deleteById(id);
     }
