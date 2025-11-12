@@ -1,5 +1,6 @@
 package com.receitasdespensa.receitas_despensa_backend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.receitasdespensa.receitas_despensa_backend.dto.InformacaoNutricionalDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.ReceitaResponseDTO;
 import com.receitasdespensa.receitas_despensa_backend.dto.ReceitaUpdateDTO;
@@ -16,7 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,9 +46,17 @@ public class ReceitaController {
     @Autowired
     private EdamamService edamamService;
 
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @PostMapping
-    public ResponseEntity<Receita> criar(@RequestBody Receita receita) {
-        Receita novaReceita = receitaService.criar(receita);
+    public ResponseEntity<Receita> criar(
+            @RequestParam("receita") String receitaJson,
+            @RequestParam(value = "imagem", required = false) MultipartFile imagem) throws IOException {
+
+        Receita receita = objectMapper.readValue(receitaJson, Receita.class);
+
+        Receita novaReceita = receitaService.criar(receita, imagem);
         return new ResponseEntity<>(novaReceita, HttpStatus.CREATED);
     }
 
@@ -192,10 +203,13 @@ public class ReceitaController {
     @PutMapping("/{id}")
     public ResponseEntity<Receita> atualizar(
             @PathVariable Integer id,
-            @RequestBody ReceitaUpdateDTO dto) {
+            @RequestParam("receita") String receitaUpdateDTOJson,
+            @RequestParam(value = "imagem", required = false) MultipartFile imagem) throws IOException {
+
+        ReceitaUpdateDTO dto = objectMapper.readValue(receitaUpdateDTOJson, ReceitaUpdateDTO.class);
 
         try {
-            Receita receitaAtualizada = receitaService.atualizar(id, dto);
+            Receita receitaAtualizada = receitaService.atualizar(id, dto, imagem);
             return ResponseEntity.ok(receitaAtualizada);
         } catch (RuntimeException e) {
 

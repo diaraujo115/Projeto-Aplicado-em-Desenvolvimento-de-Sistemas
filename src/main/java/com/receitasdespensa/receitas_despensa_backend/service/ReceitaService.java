@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.function.Function;
@@ -33,6 +34,9 @@ public class ReceitaService {
 
     @Autowired
     private IngredienteRepository ingredienteRepository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     public List<Receita> listarTodas(String categoria, String dieta) {
         return receitaRepository.findByFilters(categoria, dieta);
@@ -58,6 +62,7 @@ public class ReceitaService {
         dto.setDieta(receita.getDieta());
         dto.setDataCriacao(receita.getDataCriacao());
         dto.setInformacaoNutricional(receita.getInformacaoNutricional());
+        dto.setImagemUrl(receita.getImagemUrl());
 
         if (media != null) {
             dto.setMediaAvaliacoes(Math.round(media * 100.0) / 100.0);
@@ -81,7 +86,7 @@ public class ReceitaService {
         return Optional.of(dto);
     }
 
-    public Receita criar(Receita receita) {
+    public Receita criar(Receita receita, MultipartFile imagem) {
         Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         receita.setUsuario(usuarioLogado);
 
@@ -90,6 +95,11 @@ public class ReceitaService {
             for (ReceitaIngrediente ingredienteDaReceita : receita.getIngredientes()) {
                 ingredienteDaReceita.setReceita(receita);
             }
+        }
+
+        if (imagem != null && !imagem.isEmpty()) {
+            String filename = fileStorageService.save(imagem);
+            receita.setImagemUrl(filename);
         }
 
         calcularEPreencherNutrientes(receita);
@@ -164,13 +174,20 @@ public class ReceitaService {
         return receitaRepository.findByTituloContainingIgnoreCase(termoDeBusca);
     }
 
-    public Receita atualizar(Integer receitaId, ReceitaUpdateDTO dto) {
+    public Receita atualizar(Integer receitaId, ReceitaUpdateDTO dto, MultipartFile imagem) {
         Receita receita = receitaRepository.findByIdWithIngredientes(receitaId)
                 .orElseThrow(() -> new RuntimeException("Receita não encontrada!"));
 
         Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!receita.getUsuario().getId().equals(usuarioLogado.getId())) {
             throw new RuntimeException("Acesso negado: Você não é o autor desta receita.");
+        }
+
+        if (imagem != null && !imagem.isEmpty()) {
+            fileStorageService.delete(receita.getImagemUrl());
+
+            String newFilename = fileStorageService.save(imagem);
+            receita.setImagemUrl(newFilename);
         }
 
         receita.setTitulo(dto.getTitulo());

@@ -18,47 +18,48 @@ public class Receita {
     private Integer id;
 
     @Column(nullable = false, length = 150)
-    private String titulo; // [cite: 207]
+    private String titulo;
 
-    @Lob // Usado para campos de texto longos
+    @Lob
     @Column(nullable = false)
-    private String descricao; // [cite: 208]
+    private String descricao;
 
     @Lob
     @Column(name = "modo_preparo", nullable = false)
-    private String modoPreparo; // [cite: 209]
+    private String modoPreparo;
 
     @Column(length = 100)
-    private String categoria; // [cite: 210]
+    private String categoria;
 
     @Column(length = 50)
-    private String dieta; // [cite: 211]
+    private String dieta;
 
     @Column(name = "data_criacao")
-    private LocalDateTime dataCriacao; // [cite: 213]
+    private LocalDateTime dataCriacao;
 
-    // Relacionamento: Muitas receitas podem pertencer a um usuário.
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "id_usuario", nullable = false) // [cite: 214]
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
     @OneToMany(mappedBy = "receita", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReceitaIngrediente> ingredientes;
 
     @ManyToMany(mappedBy = "receitasSalvas", fetch = FetchType.LAZY)
-    @JsonIgnore // Essencial para evitar loops
+    @JsonIgnore
     private Set<Usuario> salvadoPorUsuarios;
 
     @OneToOne(mappedBy = "receita", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private InformacaoNutricional informacaoNutricional;
 
-    @PrePersist // Executa este método antes de salvar a entidade no banco
+    @PrePersist
     public void prePersist() {
         dataCriacao = LocalDateTime.now();
     }
 
+    @Column(name = "imagem_url")
+    private String imagemUrl;
 
     @Override
     public boolean equals(Object o) {

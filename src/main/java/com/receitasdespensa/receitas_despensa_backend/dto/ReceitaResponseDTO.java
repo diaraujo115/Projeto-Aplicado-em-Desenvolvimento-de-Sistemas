@@ -21,4 +21,5 @@ public class ReceitaResponseDTO {
     private InformacaoNutricional informacaoNutricional;
 
     private Double mediaAvaliacoes;
+    private String imagemUrl;
 }
