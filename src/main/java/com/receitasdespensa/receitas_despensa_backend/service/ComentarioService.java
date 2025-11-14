@@ -8,10 +8,12 @@ import com.receitasdespensa.receitas_despensa_backend.repository.ReceitaReposito
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class ComentarioService {
 
     @Autowired
@@ -25,10 +27,8 @@ public class ComentarioService {
     }
 
     public Comentario adicionarComentario(Integer receitaId, String texto) {
-        // Pega o usuário logado
         Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // Busca a receita pelo ID. Se não encontrar, lança uma exceção.
         Receita receita = receitaRepository.findById(receitaId)
                 .orElseThrow(() -> new RuntimeException("Receita não encontrada!"));
 
@@ -38,5 +38,32 @@ public class ComentarioService {
         novoComentario.setUsuario(usuarioLogado);
 
         return comentarioRepository.save(novoComentario);
+    }
+
+    private void verificarDono(Comentario comentario) {
+        Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!comentario.getUsuario().getId().equals(usuarioLogado.getId())) {
+            throw new RuntimeException("Acesso negado: Usuário não é o dono do comentário.");
+        }
+    }
+
+    public Comentario atualizarComentario(Integer comentarioId, String novoTexto) {
+        Comentario comentario = comentarioRepository.findById(comentarioId)
+                .orElseThrow(() -> new RuntimeException("Comentário não encontrado!"));
+
+        verificarDono(comentario);
+
+        comentario.setTexto(novoTexto);
+        return comentarioRepository.save(comentario);
+    }
+
+
+    public void deletarComentario(Integer comentarioId) {
+        Comentario comentario = comentarioRepository.findById(comentarioId)
+                .orElseThrow(() -> new RuntimeException("Comentário não encontrado!"));
+
+        verificarDono(comentario);
+
+        comentarioRepository.delete(comentario);
     }
 }
