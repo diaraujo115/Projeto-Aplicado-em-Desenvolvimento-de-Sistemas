@@ -113,14 +113,15 @@ public class UsuarioService implements UserDetailsService {
     public UsuarioDTO getMeuPerfil() {
         Usuario usuarioLogado = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // Busca o usuário "vivo" para garantir dados atualizados
+
         Usuario usuario = usuarioRepository.findById(usuarioLogado.getId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
         UsuarioDTO dto = new UsuarioDTO();
         dto.setId(usuario.getId());
         dto.setNome(usuario.getNome());
-        // Intencionalmente não retornamos email ou senha
+        dto.setEmail(usuario.getEmail());
+
         return dto;
     }
 }
