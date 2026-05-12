@@ -1,1 +1,105 @@
-https://viewer.diagrams.net/?tags=%7B%7D&lightbox=1&highlight=0000ff&edit=_blank&layers=1&nav=1&dark=auto#R%3Cmxfile%3E%3Cdiagram%20name%3D%22P%C3%A1gina-1%22%20id%3D%225Ji5nUvIjgIpAgZOD4N5%22%3E7Vxbd5s4EP41Pqd9cA4gLvaj4yRtt%2Bluzma3l0cZFKwWI68Qjt1fv5K5C2xjgg3OyUMbaRC3mW9Gc8MDMF2sP1C4nH8hDvIGmuKsB%2BBmoGljy%2BT%2FC8ImIhhAjQguxU5EyhEe8W8UE5WYGmIHBYWFjBCP4WWRaBPfRzYr0CCl5Lm47Il4xbsuoYtKhEcbemXqN%2ByweUwdKRn9I8LuPLnzOD6wgMnamBDMoUOecyRwOwBTSgiLRov1FHmCdQlbovPudhxNn4sin9U5AXvmx%2FHnJ%2FS0%2Fmt5o06%2FgdU%2Ffw3jq6ygF8bv%2B28QDqZgMFEpJvzIxBeza93HCz41PX6rawev%2BNAVw4Q0ozKFP0hh3ZYFbJOwlXNjKYbhwpvYjFC%2BZoUow5zx93CGvAcSYIaJz5fMCGNkkVsw8bArDjCy5NQ5W3h8ovIhCZmHfTRNoaCkt87zKXlpfjm0zpFivn1AZIEY3fAlyVE9luFGmj9niAAxaZ4DgxnTYIxBN71yJic%2BiEV1hNjMkthKDEYOh3E8JZTNiUt86N1m1GtKQt9BTsymbM09EXzdMvQnYmwT6yQMGSmyeydnAxJSG%2B15%2FvhxxTPu5T9FHmR4VVTFKm7Gpz4QzB8lk5thFOSW6mJyCQapi1h8ViaTCaVwk1u2FAuCI%2B5jSap43Ho%2BiJ4gA0jKk%2BaY0Q6p%2BhQ6MGCUW6k3RY8Fo6sdK7pVoeg52eQYbf4Xklgs2aggqGAJ%2FcpTZtD%2B5W6twdAmnhDRROyyFPpBws3r7Q6bHvPEqw8dSH%2B9o%2B7sHX97%2FnpK8ud99Fcc0QTSxSQ%2FeP%2B%2B8jmvw8CGHF7K38hGmHFecmkSQfjkuxQ5mD%2BJ8AQmOeRF73QUIDnXue8gDODzHDP0uIRbU%2FXMvZciyGCMPlvcl7YDMKAWNd8o40tVKwBmnApgo6MBxt%2BUDWPeCCz8DAOGnzZ7oXfYarR%2Fz77D%2FSsOQv5KvyXIHwXtLiTVVJ1a0R7JD6swz6pWoT76qdRn%2FKY%2BHanPHfb4Pd90p7buaJLuWBW6o1ToDjiV7iTKm1Oe2zWe4WjHfyJ0AbfuqbWNQA0k%2FIE%2FQ0axzd1FiIOOTdGO0KKznVwtO%2FjNfcWXWpzLtStf4NbbS8MhERkh%2Fu%2BeuNhv1cR0YUhO4dMaVlEVQEV25MyqAN5UoQVV%2BID4vWy83WSnXDT8vkm6oN3N9rVoAtCkTWFc1oTxOd1TVX9ThLYVwYNBgJ%2BwnXNOJkDsEg46lTP6avRD7d1OYbwpSBvBGFwRymF%2FsnDs1WiAphc0QFe63iGqSkmvFaaPoYsofgFIewUlUAzojQoojc4KpTaKFUkRqpT2vwSJSMptJu5gVxLRqrL7Msd8ZyLaJPjMJz4qcqlYIuacoZvv%2BckPMbkykunNOn%2FwZjM4UJiLyq81rNPBQnGOw8Ye%2F%2BGl9eRRUeV02S%2BJCt%2BlenLpQrLumjIEji5MF3DSQrUYVIXQlwQdq9fIURsjRyqBaErvkFMVc14Sckb9Ro7ca9DU5vQQOVXB2CUhZ9xv5FhNkSOVjjQwukpSrP0BT52euD6DJzHsfUXPqPGOJSV9FKM76Pxxd3f9Sb%2F%2FTKz14%2BNXsIBD8DCszAHBhYgY4pgjP8O%2B7YUi1xcT3cKSHWFJBjyyRP4WNUmvs6qJAAkG8y321ONBqR6AJFpj9j1Zx8c5IPNZdpKYFGEsQbFZr2ci%2FsMKoB3Ee7r5vRDcQO7za7qpGmP9ytR101TGumJamlmEOj%2Bq6poKDFMDFnfdzFrIbwvXlamdy8H1YWPbNbL1%2FiFbl0NUuX2jNrKlCwHZ%2Fp8YvJXJpF6CtwEIdwC%2Blm%2FRDnRB%2F6CbJjBTR6GxUVavhMMyHo9UXdcsrXhZ07oClm5YmgI0U9G1s8L6QMNglNacOAvs46gXn9bMfJ67z76UFq0AYu0%2Be%2FOMffaVYlHLH0Ltsxf2tghs1zELmSn4kTuywyzwyQOimL%2BTyEm%2FQOl3Y6%2BreEKKIc2m4YT87YxRM43RlgK30luUr3JUlKJOWeF4kd7KFY7USThDhaNaGm00uOTaO9qpTec%2FrLpIuZoVzcHnlWufUoF1jG%2FekdpjN%2FqSzTHlLyGb1h8MeUvuPJtTWYa%2BFOjsKaz3BjqNI0pT2jzkGlj30Gm5Xp64gCdPT%2BzZG7uCDRgVc2Gmrl9Jid%2FaLp%2BMwC6r5ZWsTqzpPuDYIV2l2YQjY4nUBmVmp07mt00bdDgPcM7GCxkBdaFkSkVQ%2FcVF0B1pOGmbTNJyu54r7SRJ1rf8iwDVqK0KeuOuysRPDe2c%2FzrLvFfFhgEZbluew4CUwJ7LRtxRuKjh1m45iujtCgnGRvhNwCW%2BS%2BOLE1yBlrIQ8q96lLu1Uj84j2kLSHasNa83sRqvyHXpdA8qmY2mrkuphtk710XrU79WO9DpVcCkNw6YtL6Xv7VLjrX3lJx7A53mVudAQeSE0OHT7KfJouXZz7uB2%2F8B%3C%2Fdiagram%3E%3C%2Fmxfile%3E
+# 🍽️ Receitas & Despensa — Back-end
+
+API REST desenvolvida em **Java com Spring Boot** como projeto de conclusão de curso, integrando gestão de receitas com análise nutricional automática baseada nos ingredientes informados.
+
+> 🔗 Front-end: [Projeto-Aplicado-em-Desenvolvimento-de-Sistemas-Front](https://github.com/diaraujo115/Projeto-Aplicado-em-Desenvolvimento-de-Sistemas-Front)
+
+---
+
+## 📋 Funcionalidades
+
+- Cadastro, listagem e busca de receitas
+- Criação de conta de usuário com autenticação
+- Sistema de comentários e avaliação de receitas
+- **Análise nutricional automática** com base nos ingredientes da receita
+- Filtro de receitas por ingredientes disponíveis na despensa do usuário
+- Favoritar e salvar receitas
+
+---
+
+## 🛠️ Tecnologias
+
+| Camada | Tecnologia |
+|---|---|
+| Linguagem | Java 17+ |
+| Framework | Spring Boot |
+| Persistência | Spring Data JPA |
+| Banco de dados | MySQL |
+| Autenticação | Spring Security + JWT |
+| Build | Maven |
+
+---
+
+## 🚀 Como executar localmente
+
+### Pré-requisitos
+
+- Java 17+
+- Maven
+- PostgreSQL (ou banco de sua preferência)
+
+### Passos
+
+```bash
+# Clone o repositório
+git clone https://github.com/diaraujo115/Projeto-Aplicado-em-Desenvolvimento-de-Sistemas.git
+cd Projeto-Aplicado-em-Desenvolvimento-de-Sistemas
+
+# Configure o banco de dados em src/main/resources/application.properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/receitas
+spring.datasource.username=seu_usuario
+spring.datasource.password=sua_senha
+
+# Execute a aplicação
+./mvnw spring-boot:run
+```
+
+A API ficará disponível em `http://localhost:8080`.
+
+---
+
+## 📡 Principais Endpoints
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/receitas` | Lista todas as receitas |
+| GET | `/receitas/{id}` | Detalha uma receita |
+| GET | `/receitas/buscar?q=termo` | Busca receitas por nome/ingrediente |
+| GET | `/receitas/filtrar?ingredientes=...` | Filtra por ingredientes disponíveis |
+| POST | `/receitas` | Cria uma nova receita |
+| POST | `/receitas/{id}/comentarios` | Adiciona comentário |
+| POST | `/receitas/{id}/avaliacao` | Avalia uma receita |
+| GET | `/nutricional/{id}` | Retorna análise nutricional da receita |
+| POST | `/auth/register` | Cadastro de usuário |
+| POST | `/auth/login` | Login e geração de token JWT |
+
+---
+
+## 🧠 Análise Nutricional Automática
+
+Ao criar uma receita com seus ingredientes e quantidades, o sistema calcula automaticamente os valores nutricionais (calorias, proteínas, carboidratos, gorduras, etc.) com base em uma base de dados de alimentos. O resultado é retornado via endpoint REST e exibido no front-end.
+
+---
+
+## 🗂️ Estrutura do Projeto
+
+```
+src/
+└── main/
+    ├── java/
+    │   └── com/projeto/receitas/
+    │       ├── controller/    # Endpoints REST
+    │       ├── service/       # Regras de negócio
+    │       ├── repository/    # Acesso ao banco (JPA)
+    │       ├── model/         # Entidades
+    │       └── security/      # Autenticação JWT
+    └── resources/
+        └── application.properties
+```
+
+---
+
+## 👨‍💻 Autor
+
+**Diego Araújo**
+[LinkedIn](https://linkedin.com/in/diego-araujo115) • [GitHub](https://github.com/diaraujo115)
