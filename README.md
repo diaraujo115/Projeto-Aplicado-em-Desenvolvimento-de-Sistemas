@@ -1,4 +1,4 @@
-# 🍽️ Receitas & Despensa — Back-end
+# 🍽️ Receitas de Despensa — Back-end
 
 API REST desenvolvida em **Java com Spring Boot** como projeto de conclusão de curso, integrando gestão de receitas com análise nutricional automática baseada nos ingredientes informados.
 
