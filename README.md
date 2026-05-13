@@ -77,9 +77,14 @@ A API ficará disponível em `http://localhost:8080`.
 
 ## 🧠 Análise Nutricional Automática
 
-Ao criar uma receita com seus ingredientes e quantidades, o sistema calcula automaticamente os valores nutricionais (calorias, proteínas, carboidratos, gorduras, etc.) com base em uma base de dados de alimentos. O resultado é retornado via endpoint REST e exibido no front-end.
-
+Ao criar uma receita com seus ingredientes e quantidades, o sistema consulta 
+a **[Edamam Nutrition API](https://developer.edamam.com/edamam-nutrition-api)** 
+para calcular automaticamente os valores nutricionais (calorias, proteínas, 
+carboidratos, gorduras, etc.) de cada receita com base nos ingredientes informados,
+e salva esses dados em banco para não ser necessário um novo consumo toda vez que a
+receita for acessada.
 ---
+
 
 ## 🗂️ Estrutura do Projeto
 
